@@ -79,6 +79,60 @@ contract Arbitrage is Test {
         /**
          * Please add your solution below
          */
+         
+        // Step 1: tokenB -> tokenA
+        address[] memory path = new address[](2);
+        path[0] = address(tokenB);
+        path[1] = address(tokenA);
+        router.swapExactTokensForTokens(5 ether, 0, path, arbitrager, block.timestamp);
+
+        uint256 tokenABalance = tokenA.balanceOf(arbitrager);
+        console.log("After Arbitrage tokenA Balance: %s", tokenABalance);
+
+        // Step 2: tokenA -> tokenC
+        tokenA.approve(address(router), tokenABalance);
+        path[0] = address(tokenA);
+        path[1] = address(tokenC);
+        router.swapExactTokensForTokens(tokenABalance, 0, path, arbitrager, block.timestamp);
+
+        uint256 tokenCBalance = tokenC.balanceOf(arbitrager);
+        console.log("After Arbitrage tokenC Balance: %s", tokenCBalance);
+
+        // Step 3: tokenC -> tokenE
+        tokenC.approve(address(router), tokenCBalance);
+        path[0] = address(tokenC);
+        path[1] = address(tokenE);
+        router.swapExactTokensForTokens(tokenCBalance, 0, path, arbitrager, block.timestamp);
+
+        uint256 tokenEBalance = tokenE.balanceOf(arbitrager);
+        console.log("After Arbitrage tokenE Balance: %s", tokenEBalance);
+  
+        // Step 4: tokenE -> tokenD
+        tokenE.approve(address(router), tokenEBalance);
+        path[0] = address(tokenE);
+        path[1] = address(tokenD);
+        router.swapExactTokensForTokens(tokenEBalance, 0, path, arbitrager, block.timestamp);
+
+        uint256 tokenDBalance = tokenD.balanceOf(arbitrager);
+        console.log("After Arbitrage tokenD Balance: %s", tokenDBalance);
+        
+        // Step 5: tokenD -> tokenC
+
+        tokenD.approve(address(router), tokenDBalance);
+        path[0] = address(tokenD);
+        path[1] = address(tokenC);
+        router.swapExactTokensForTokens(tokenDBalance, 0, path, arbitrager, block.timestamp);
+        
+        tokenCBalance = tokenC.balanceOf(arbitrager);
+        console.log("After Arbitrage tokenC Balance: %s", tokenCBalance);
+                
+        // Step 6: tokenC -> tokenB
+
+        tokenC.approve(address(router), tokenCBalance);
+        path[0] = address(tokenC);
+        path[1] = address(tokenB);
+        router.swapExactTokensForTokens(tokenCBalance, 0, path, arbitrager, block.timestamp);
+
         /**
          * Please add your solution above
          */

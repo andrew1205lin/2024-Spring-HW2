@@ -11,11 +11,21 @@ liquidity = {
     ("tokenD", "tokenE"): (60, 25),
 }
 
-def calculate_swap_amount(x, y, delta_y):
-    """Calculate the amount of token x received for delta_y amount of token y."""
-    return x - (x * y) / (y + delta_y)
+def calculate_swap_amount(x, y, delta_x):
+    """Calculate the amount of token y received for delta_x amount of token x."""
+    new_x = x + delta_x
+    new_y = (x * y) / new_x
+    return new_x, new_y
 
-def find_arbitrage_path(start_token, current_token, balance, path, visited):
+def update_liquidity(token_from, token_to, new_x, new_y, liquidity):
+    """Update the liquidity pool after a swap."""
+    liquidity_copy = liquidity.copy()
+    liquidity_copy[(token_from, token_to)] = (new_x, new_y)
+    return liquidity_copy
+
+def find_arbitrage_path(start_token, current_token, balance, path, visited, liquidity):
+    # print(f"Path: {'->'.join(path)}, {current_token} balance={balance}")
+    # print(f"liquidity: {liquidity}")
     if current_token == start_token and len(path) > 1:
         if balance > 20:
             print(f"Path: {'->'.join(path)}, {start_token} balance={balance}")
@@ -27,12 +37,16 @@ def find_arbitrage_path(start_token, current_token, balance, path, visited):
             continue
 
         if token_from == current_token:
-            new_balance = balance + calculate_swap_amount(x, y, balance)
-            if find_arbitrage_path(start_token, token_to, new_balance, path + [token_to], visited + [(token_from, token_to)]):
+            new_x, new_y = calculate_swap_amount(x, y, balance)
+            new_balance = y - new_y
+            new_liquidity = update_liquidity(token_from, token_to, new_x, new_y, liquidity)
+            if find_arbitrage_path(start_token, token_to, new_balance, path + [token_to], visited + [(token_from, token_to)], new_liquidity):
                 return True
         elif token_to == current_token:
-            new_balance = balance + calculate_swap_amount(y, x, balance)
-            if find_arbitrage_path(start_token, token_from, new_balance, path + [token_from], visited + [(token_to, token_from)]):
+            new_y, new_x  = calculate_swap_amount(y, x, balance)
+            new_balance = x - new_x
+            new_liquidity = update_liquidity(token_from, token_to, new_x, new_y, liquidity)
+            if find_arbitrage_path(start_token, token_from, new_balance, path + [token_from], visited + [(token_to, token_from)], new_liquidity):
                 return True
     return False
 
@@ -41,4 +55,4 @@ start_token = "tokenB"
 initial_balance = 5
 
 # Start the search for an arbitrage path
-find_arbitrage_path(start_token, start_token, initial_balance, [start_token], [])
+find_arbitrage_path(start_token, start_token, initial_balance, [start_token], [], liquidity)
