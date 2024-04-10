@@ -12,10 +12,15 @@ Provide your profitable path, the amountIn, amountOut value for each swap, and y
 > log:
 
 After Arbitrage tokenA Balance: 5655321988655321988
+
 After Arbitrage tokenC Balance: 2372138936383089007
+
 After Arbitrage tokenE Balance: 1530137136963616993
+
 After Arbitrage tokenD Balance: 3450741448619708083
+
 After Arbitrage tokenC Balance: 6684525579572586452
+
 After Arbitrage tokenB Balance: 22497221806974138089
 
 ## Problem 2
